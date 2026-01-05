@@ -2,3 +2,11 @@ sneha | Score: 2 | Percentage: 100.0 | Result: PASS | 2026-01-03 23:50:12
 arjun | Score: 1 | Percentage: 50.0 | Result: PASS | 2026-01-04 01:02:16
 
 sneha | Score: 2 | Percentage: 100.0 | Result: PASS | 2026-01-05 15:41:38
+sneha | Score: 2/2 | Percentage: 100.00% | Result: PASS | 2026-01-05 16:17:38
+arjun | Score: 1/2 | Percentage: 50.00% | Result: PASS | 2026-01-05 16:20:34
+sneha | Score: 1/2 | Percentage: 50.00% | Result: PASS | 2026-01-05 16:28:12
+arjun | Score: 1/2 | Percentage: 50.00% | Result: PASS | 2026-01-05 16:30:06
+sneha | Score: 1/2 | Percentage: 50.00% | Result: PASS | 2026-01-05 16:32:19
+arjun | Score: 1/2 | Percentage: 50.00% | Result: PASS | 2026-01-05 16:33:30
+arjun | Score: 0/2 | Percentage: 0.00% | Result: FAIL | 2026-01-05 16:34:15
+arjun | Score: 2/2 | Percentage: 100.00% | Result: PASS | 2026-01-05 16:35:50

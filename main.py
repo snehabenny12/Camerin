@@ -1,88 +1,111 @@
 import time
+import msvcrt
 
 print("Welcome to Online Examination System")
 
+# Login
 username = input("Enter username: ")
 password = input("Enter password: ")
 
-file = open("students.txt", "r")
-
 valid_user = False
-
-for line in file:
-    line = line.strip()
-    stored_user, stored_pass = line.split(",")
-
-    if username == stored_user and password == stored_pass:
-        valid_user = True
-        break
-
-file.close()
+with open("students.txt", "r") as file:
+    for line in file:
+        stored_user, stored_pass = line.strip().split(",")
+        if username == stored_user and password == stored_pass:
+            valid_user = True
+            break
 
 if not valid_user:
     print("Access Denied. Exiting...")
     exit()
 
-print("Login Successful!")
+print(f"\nLogin Successful! Welcome, {username}\nStarting Exam...\n")
 
-print("\nStarting Exam...\n")
-
+# Exam settings
+total_exam_time = 30  # total exam time in seconds
 questions = [
-    {
-        "question": "What is the output of print(2 + 3)?",
-        "options": ["1", "5", "23", "Error"],
-        "answer": "5"
-    },
-    {
-        "question": "Which keyword is used to define a function in Python?",
-        "options": ["func", "define", "def", "function"],
-        "answer": "def"
-    }
+    {"question": "What is the output of print(2 + 3)?",
+     "options": ["1", "5", "23", "Error"], "answer": "5"},
+    {"question": "Which keyword is used to define a function in Python?",
+     "options": ["func", "define", "def", "function"], "answer": "def"}
 ]
+
 score = 0
-for q in questions:
-    print(q["question"])
-    
-    for option in q["options"]:
-        print(option)
+start_time = time.time()
 
-    user_answer = input("Enter your answer: ")
+for i, q in enumerate(questions, 1):
+    elapsed = time.time() - start_time
+    remaining_time = total_exam_time - elapsed
+    if remaining_time <= 0:
+        print("\n⏰ Time is up! Auto-submitting your exam...")
+        break
 
+    print(f"\nQ{i}: {q['question']}")
+    for idx, option in enumerate(q["options"], 1):
+        print(f"{idx}. {option}")
 
+    user_answer = ""
+    print("Enter option number: ", end="", flush=True)
 
-    if user_answer == q["answer"]:
-        score += 1
-        print("Correct!")
+    while True:
+        elapsed = time.time() - start_time
+        remaining_time = int(total_exam_time - elapsed)
+
+        # Show live countdown
+        print(f"\rTime remaining: {remaining_time} sec | Your answer: {user_answer}", end="", flush=True)
+
+        if remaining_time <= 0:
+            print("\n⏰ Time is up! Auto-submitting your exam...")
+            break
+
+        # Non-blocking input
+        if msvcrt.kbhit():
+            char = msvcrt.getwch()
+            if char == "\r":  # Enter pressed
+                print()
+                break
+            elif char == "\b":  # Backspace
+                if len(user_answer) > 0:
+                    user_answer = user_answer[:-1]
+            else:
+                user_answer += char
+
+        time.sleep(0.1)  # small delay to reduce CPU usage
+
+    if remaining_time <= 0:
+        break  # exit if time expired
+
+    # Validate answer
+    if user_answer.isdigit() and 1 <= int(user_answer) <= len(q["options"]):
+        selected_option = q["options"][int(user_answer) - 1]
+        if selected_option.lower() == q["answer"].lower():
+            score += 1
+            print("Correct!\n")
+        else:
+            print(f"Wrong! Correct answer: {q['answer']}\n")
     else:
-        print("Wrong!")
+        print("Invalid input! Moving to next question.\n")
 
-    print()
-
-
-print()
-print("Exam Finished")
-print("Your Score:", score)
+# Calculate results
 total_questions = len(questions)
 percentage = (score / total_questions) * 100
+result = "PASS" if percentage >= 50 else "FAIL"
+exam_time = time.strftime("%Y-%m-%d %H:%M:%S")
 
-print("Percentage:", percentage)
-if percentage >= 50:
-    result = "PASS"
-else:
-    result = "FAIL"
+# Display final results
+print("\n===== Exam Results =====")
+print(f"Student: {username}")
+print(f"Score: {score}/{total_questions}")
+print(f"Percentage: {percentage:.2f}%")
+print(f"Result: {result}")
+print(f"Date & Time: {exam_time}")
+print("========================\n")
 
-print("Result:", result)
+# Save results for future reference
+with open("results.txt", "a") as result_file:
+    result_file.write(
+        f"{username} | Score: {score}/{total_questions} | "
+        f"Percentage: {percentage:.2f}% | Result: {result} | {exam_time}\n"
+    )
 
-result_file = open("results.txt", "a")
-
-current_time = time.strftime("%Y-%m-%d %H:%M:%S")
-
-result_file.write(
-    f"{username} | Score: {score} | Percentage: {percentage} | Result: {result} | {current_time}\n"
-)
-
-result_file.close()
-
-
-
-
+print("✅ Your result has been saved for future reference in 'results.txt'.")
